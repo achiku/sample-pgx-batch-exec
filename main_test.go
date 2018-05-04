@@ -13,7 +13,7 @@ func testNewConfig(t *testing.T) *Config {
 	return c
 }
 
-func testNewDB(t *testing.T) *sql.DB {
+func testNewDB(t *testing.T) (*sql.DB, func()) {
 	c, err := NewConfig("./config.toml")
 	if err != nil {
 		t.Fatal(err)
@@ -22,5 +22,8 @@ func testNewDB(t *testing.T) *sql.DB {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return db.DB
+	return db.DB, func() {
+		db.Exec(`truncate bulk_insert`)
+		db.Exec(`truncate bulk_update`)
+	}
 }
